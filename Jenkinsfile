@@ -41,9 +41,11 @@ pipeline {
         stage('Deploy to Dev Environment') {
             steps {
                 script {
+                    writeFile file: 'kubeconfig.yaml', text: readFile(KUBECONFIG)
                     // This sets up the Kubernetes configuration using the specified KUBECONFIG
-                    def kubeConfig = readFile(KUBECONFIG)
+                   // def kubeConfig = readFile(KUBECONFIG)
                     // This updates the deployment-dev.yaml to use the new image tag
+                    sh 'export KUBECONFIG=./kubeconfig.yaml'
                     sh "sed -i 's|${DOCKER_IMAGE}:latest|${DOCKER_IMAGE}:${IMAGE_TAG}|' deployment-dev.yaml"
                     sh "kubectl apply -f deployment-dev.yaml"
                 }
